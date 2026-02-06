@@ -58,4 +58,3 @@ install.packages(c(
 **Rashid C.J. Marcano Rivera, Ph.D., M.S., M.A.**
 Departamento de Sociología y Antropología, Facultad de Ciencias Sociales
 Universidad de Puerto Rico, Recinto de Río Piedras
-rashid.marcano@upr.edu
