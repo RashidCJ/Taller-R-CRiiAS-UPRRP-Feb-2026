@@ -1,0 +1,853 @@
+---
+title: "Usando R y RStudio en la investigación académica"
+subtitle: "Centro de Recursos de Investigación/Creación Interdisciplinaria y Aprendizaje Subgraduado"
+author:
+  - name: "Rashid C.J. Marcano Rivera, Ph.D., M.S., M.A."
+    affiliation: "Departamento de Sociología y Antropología, Facultad de Ciencias Sociales"
+date: 2026-02-06
+lang: es
+date-format: long
+format:
+  html:
+    self-contained: true
+    theme: united
+    toc: true
+    toc-location: left
+    number-sections: true
+    toc-expand: true
+    highlight-style: monokai
+    code-fold: false
+    code-tools: true
+editor: visual
+
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Introducción
+
+**Usando R y RStudio en la investigación académica**
+
+Este taller ofrece una introducción práctica a R y RStudio orientada a personas que investigan en ciencias sociales, humanidades y artes. Está basado en notas de Paul Thibodeau, revisiones del departamento de psicología de BYU [(vea esa versión aquí)](https://fhssrsc.byu.edu/r-workshop), ejemplos del libro de Rafael Irizarry [disponible aquí,](https://rafalab.dfci.harvard.edu/dslibro/index.html) y material adaptado por el autor para talleres previos en la UPR-RP.
+
+*Si aún no han instalado R, está disponible [aquí](http://cran.us.r-project.org/). Acto seguido, [bajen RStudio](https://posit.co/download/rstudio-desktop/). Pueden también ir a la nube [en Posit Cloud](https://posit.cloud/).*
+
+## ¿Por qué R para la investigación en humanidades y ciencias sociales?
+
+R no es solo para estadísticos. Es una herramienta poderosa para:
+
+-   **Análisis de textos literarios y narrativos** — útil para quienes trabajan con poesía, narrativa, discurso político o análisis lingüístico.
+-   **Visualización de datos culturales e históricos** — crear mapas, líneas de tiempo, gráficos comparativos.
+-   **Exploración de colecciones artísticas** — analizar metadatos de museos, catálogos y obras de arte.
+-   **Reproducibilidad** — documentar cada paso del análisis para que otros (o uno mismo en el futuro) puedan verificarlo.
+-   **Acceso a datos abiertos** — desde datos censales hasta corpus literarios completos, incluyendo textos en español del Proyecto Gutenberg.
+
+## Metas del taller
+
+Al culminar las dos horas y veinte minutos de este taller podrán:
+
+1.  Entender la lógica de RStudio y ejecutar operaciones básicas.
+2.  Importar, manipular y visualizar datos con `tidyverse` y `ggplot2`.
+3.  Conocer herramientas de análisis de texto con `quanteda` y `tidytext`, relevantes para narrativas, discursos y corpus literarios.
+4.  Explorar datos de colecciones artísticas y textos en español desde R.
+
+## Sobre aprender R
+
+R es un lenguaje creado por estadísticos como ambiente interactivo para análisis de datos. Los *scripts* que escriban sirven como un registro reproducible de su análisis. Es gratuito, de código abierto, y modular: las funcionalidades añadidas por la comunidad cubren disciplinas desde la ciencia política hasta la lingüística computacional, pasando por la sociología, el arte digital y la literatura.
+
+La habilidad más útil de antemano es saber adónde ir cuando se atasquen. La consola de R brinda retroalimentación inmediata. Pueden buscar ayuda con `help(función)` o `?función`. Para búsquedas más amplias, usen `??término`. En internet, [StackOverflow](http://stackoverflow.com/) con el tag `[R]` es un recurso invaluable.
+
+Sobre errores: resistan el impulso de frustrarse. Los mensajes de error están diseñados para transmitir información; entenderlos es clave para resolver problemas o cambiar de estrategia.
+
+## RStudio y Quarto
+
+¿Cómo difieren R y RStudio? RStudio es una interfaz que yace encima de R, y es **mucho** más amigable. Organiza el trabajo en paneles: *Consola* (donde se ejecuta código), *Environment* o Ambiente (objetos guardados), *Output* o Salida (archivos, gráficos, ayuda) y *Source* o Fuente (editor de *scripts* y documentos).
+
+[Quarto](https://quarto.org/docs/get-started/hello/rstudio.html) es un formato de documento que combina texto narrativo con código ejecutable. Este mismo documento fue creado en Quarto. Es útil para crear informes, artículos y presentaciones reproducibles. Pueden correr líneas de código con `Cmd+Return` en Mac o `Ctrl+Enter` en PC.
+
+# Primeros pasos en R
+
+## La consola como calculadora
+
+En su forma más básica, R es una calculadora. Escriban en la consola (o en un bloque de código en Quarto) y el resultado saldrá al ejecutarlo:
+
+```{r}
+#| label: calculadora
+
+1 + 2
+13 / 2
+2 ^ 6
+sqrt(81)
+```
+
+## Asignando valores a objetos
+
+La computación con R incluye asignar valores a objetos. Esto se puede hacer de dos maneras equivalentes: `=` y `<-`. Muchos preferimos `<-` porque hace más evidente la acción de asignar.
+
+```{r}
+#| label: objetos
+
+x <- 4
+x
+x + 2
+
+# Texto (entre comillas)
+isla <- "Puerto Rico"
+isla
+
+# Valores lógicos
+bilingue <- TRUE
+bilingue
+```
+
+Usen nombres descriptivos para sus variables: `edad_participante` es mucho mejor que `x` cuando vuelvan a su código meses después. No se permiten espacios en los nombres; consideren unir palabras con `_` o `.`.
+
+## Vectores y funciones básicas
+
+Las **funciones** toman insumos (*argumentos*), hacen una operación y devuelven resultados. La función `c()` concatena valores en un **vector**, que es la estructura básica de datos en R.
+
+```{r}
+#| label: vectores
+
+# Un vector con edades de participantes
+edades <- c(23, 31, 27, 45, 38, 22, 29)
+mean(edades)    # media o promedio
+sd(edades)      # desviación estándar
+range(edades)   # rango (mínimo y máximo)
+
+# Contar participantes por área
+humanidades <- 4
+ciencias_sociales <- 3
+artes <- 2
+total <- humanidades + ciencias_sociales + artes
+print(paste0("Total de participantes: ", total))
+```
+
+# Importando y explorando datos
+
+## Cargando paquetes y datos
+
+Los paquetes en R son conjuntos de herramientas especializadas. Se instalan una vez con `install.packages()` y se cargan en cada sesión con `library()`.
+
+```{r}
+#| label: paquetes
+
+# install.packages(c("tidyverse", "dslabs")) # Descomenten si necesitan instalar
+library(tidyverse)
+library(dslabs)
+
+# Datos preexistentes: esperanza de vida y desarrollo mundial
+data(gapminder)
+```
+
+## Echando un vistazo a los datos
+
+Una vez importados los datos, conviene verificar que todo entró correctamente:
+
+```{r}
+#| label: vistazo
+
+names(gapminder)    # nombres de las variables
+head(gapminder)     # primeras filas
+summary(gapminder)  # resumen estadístico
+```
+
+Estos datos de `gapminder` contienen información de países a través de décadas: población, esperanza de vida, fertilidad, PIB. Son útiles para explorar tendencias globales relevantes a temas como la emigración, el desarrollo económico y las dinámicas coloniales.
+
+## Tipos de datos
+
+Hay cuatro tipos principales de datos en R:
+
+1.  **Numéricos** — números enteros y decimales
+2.  **Caracteres** (*strings*) — texto entre comillas
+3.  **Lógicos** — `TRUE` o `FALSE`
+4.  **Factores** — categorías con niveles discretos
+
+Pueden verificar el tipo con `str(variable)` y convertir entre tipos con funciones como `as.factor()`, `as.numeric()`, etc.
+
+## Filtrando y transformando con Tidyverse
+
+El `tidyverse` es una colección de paquetes que comparten una filosofía de diseño coherente para la manipulación de datos. Las funciones principales son:
+
+-   `filter()` — seleccionar filas según condiciones
+-   `select()` — elegir columnas específicas
+-   `mutate()` — crear o modificar variables
+-   `group_by()` — agrupar datos por categorías
+-   `summarise()` — calcular estadísticas de resumen
+
+```{r}
+#| label: tidyverse-basico
+
+# ¿Cómo se compara Puerto Rico con el Caribe?
+gapminder |>
+  filter(country %in% c("Puerto Rico", "Cuba", "Dominican Republic",
+                         "Jamaica", "Trinidad and Tobago"),
+         year %in% c(1970, 1990, 2010)) |>
+  select(country, year, life_expectancy, fertility, population) |>
+  arrange(year, country)
+```
+
+## El operador pipe `|>`
+
+El *pipe* (`|>` o `%>%`) canaliza los datos de una operación a la siguiente, haciendo el código más legible. Es como decir: "toma esto, **luego** haz aquello":
+
+```{r}
+#| label: pipe
+
+# Sin pipe (anidado, difícil de leer):
+# filter(select(gapminder, country, year, life_expectancy), country == "Puerto Rico")
+
+# Con pipe (secuencial, claro):
+gapminder |>
+  select(country, year, life_expectancy) |>
+  filter(country == "Puerto Rico") |>
+  arrange(year)
+```
+
+## Resumiendo datos por grupos
+
+```{r}
+#| label: group-by
+
+# Esperanza de vida promedio por continente en 2010
+gapminder |>
+  filter(year == 2010) |>
+  group_by(continent) |>
+  summarise(
+    esperanza_media = mean(life_expectancy, na.rm = TRUE),
+    paises = n()
+  )
+```
+
+# Visualización de datos
+
+## ¿Por qué visualizar?
+
+Ver números en una tabla puede ser útil, pero una imagen comunica patrones y relaciones de manera inmediata. Para muchos, es difícil extraer información de números sin contexto visual. La visualización es especialmente poderosa para:
+
+-   Mostrar cambios a través del tiempo (emigración, tendencias culturales)
+-   Comparar grupos (regiones, géneros literarios, periodos históricos)
+-   Identificar patrones inesperados en los datos
+
+## ggplot2: la gramática de gráficos
+
+`ggplot2` construye gráficos por **capas**, como un pintor que va añadiendo elementos a un lienzo. Los tres componentes esenciales son:
+
+-   **Datos**: el conjunto de datos que alimenta el gráfico
+-   **Geometrías**: el tipo de gráfico (puntos, líneas, barras, etc.)
+-   **Mapeo estético**: qué variables van en qué eje, color o tamaño
+
+```{r}
+#| label: ggplot-basico
+
+# Paso 1: Lienzo vacío (solo asignamos datos)
+gapminder |>
+  filter(year == 2010, !is.na(gdp)) |>
+  ggplot()
+
+# Paso 2: Añadimos geometría y estética
+gapminder |>
+  filter(year == 2010, !is.na(gdp)) |>
+  ggplot(aes(x = gdp/population, y = life_expectancy)) +
+  geom_point()
+```
+
+## Añadiendo capas de información
+
+Podemos seguir añadiendo capas: color por continente, tamaño por población, escalas logarítmicas, títulos...
+
+```{r}
+#| label: ggplot-capas
+#| fig-width: 9
+#| fig-height: 6
+
+gapminder |>
+  filter(year == 2010, !is.na(gdp)) |>
+  mutate(pib_per_capita = gdp / population) |>
+  ggplot(aes(x = pib_per_capita, y = life_expectancy,
+             colour = continent, size = population/10^6)) +
+  geom_point(alpha = 0.7) +
+  scale_x_log10() +
+  labs(
+    title = "Esperanza de vida y PIB per cápita (2010)",
+    x = "PIB per cápita (escala logarítmica)",
+    y = "Esperanza de vida (años)",
+    colour = "Continente",
+    size = "Población\n(millones)"
+  ) +
+  theme_minimal()
+```
+
+## Comparando regiones a través del tiempo
+
+Las **facetas** permiten dividir un gráfico en paneles según una variable categórica. Aquí comparamos 1970 con 2010:
+
+```{r}
+#| label: facetas
+#| fig-width: 10
+#| fig-height: 5
+
+gapminder |>
+  filter(year %in% c(1970, 2010)) |>
+  ggplot(aes(x = fertility, y = life_expectancy, colour = continent)) +
+  geom_point(alpha = 0.6) +
+  facet_wrap(~ year) +
+  labs(
+    title = "Convergencia global: fertilidad y esperanza de vida",
+    x = "Fertilidad",
+    y = "Esperanza de vida (años)",
+    colour = "Continente"
+  ) +
+  theme_minimal()
+```
+
+Podemos apreciar cómo la dispersión entre países ha ido encaminada hacia una convergencia en estándares de vida entre 1970 y 2010.
+
+## El Caribe en contexto
+
+```{r}
+#| label: caribe
+#| fig-width: 9
+#| fig-height: 5
+
+caribe <- c("Puerto Rico", "Cuba", "Dominican Republic",
+            "Jamaica", "Trinidad and Tobago", "Haiti")
+
+gapminder |>
+  filter(country %in% caribe) |>
+  ggplot(aes(x = year, y = life_expectancy, colour = country)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "Esperanza de vida en el Caribe (1960–2016)",
+    x = "Año",
+    y = "Esperanza de vida (años)",
+    colour = "País"
+  ) +
+  theme_minimal()
+```
+
+## Distribuciones por región
+
+```{r}
+#| label: distribuciones
+#| fig-width: 9
+#| fig-height: 5
+
+# Ingreso diario per cápita por grupo de regiones
+gapminder |>
+  filter(year == 2010, !is.na(gdp)) |>
+  mutate(
+    dolares_dia = gdp / population / 365,
+    grupo = case_when(
+      region %in% c("Caribbean", "Central America",
+                    "South America") ~ "Latinoamérica y Caribe",
+      region %in% c("Western Europe", "Northern Europe", "Southern Europe",
+                    "Northern America",
+                    "Australia and New Zealand") ~ "Occidente",
+      continent == "Africa" ~ "África",
+      TRUE ~ "Asia y otros"
+    )
+  ) |>
+  ggplot(aes(x = reorder(grupo, dolares_dia, FUN = median),
+             y = dolares_dia)) +
+  geom_boxplot(aes(fill = grupo), alpha = 0.7) +
+  scale_y_log10() +
+  labs(
+    title = "Ingreso diario per cápita por región (2010)",
+    x = "", y = "Dólares por día (escala logarítmica)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 15, hjust = 1))
+```
+
+## Correlación: midiendo relaciones entre variables
+
+A menudo queremos saber si dos variables están relacionadas. La **correlación** mide la fuerza y dirección de una relación lineal entre dos variables numéricas. El coeficiente de correlación de Pearson (*r*) va de -1 a 1:
+
+-   **r = 1**: relación positiva perfecta (cuando una sube, la otra también)
+-   **r = 0**: no hay relación lineal
+-   **r = -1**: relación negativa perfecta (cuando una sube, la otra baja)
+
+```{r}
+#| label: correlacion
+#| fig-width: 9
+#| fig-height: 5
+
+# Preparar datos: PIB per cápita y esperanza de vida en 2010
+datos_2010 <- gapminder |>
+  filter(year == 2010, !is.na(gdp)) |>
+  mutate(pib_per_capita = gdp / population)
+
+# Calcular la correlación
+cor(datos_2010$pib_per_capita, datos_2010$life_expectancy,
+    use = "complete.obs")
+
+# Prueba de significancia estadística
+cor.test(datos_2010$pib_per_capita, datos_2010$life_expectancy)
+```
+
+El coeficiente es positivo y estadísticamente significativo: los países con mayor PIB per cápita tienden a tener mayor esperanza de vida. Visualicemos esta relación con una línea de tendencia:
+
+```{r}
+#| label: correlacion-grafico
+#| fig-width: 9
+#| fig-height: 5
+
+datos_2010 |>
+  ggplot(aes(x = pib_per_capita, y = life_expectancy)) +
+  geom_point(aes(colour = continent), alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, colour = "black", linetype = "dashed") +
+  scale_x_log10() +
+  labs(
+    title = "Correlación entre PIB per cápita y esperanza de vida (2010)",
+    subtitle = paste0("r = ", round(cor(datos_2010$pib_per_capita,
+                                         datos_2010$life_expectancy,
+                                         use = "complete.obs"), 3)),
+    x = "PIB per cápita (escala logarítmica)",
+    y = "Esperanza de vida (años)",
+    colour = "Continente"
+  ) +
+  theme_minimal()
+```
+
+La línea discontinua es la línea de regresión lineal, y la banda gris es el intervalo de confianza del 95%. Noten que la relación es más fuerte en los extremos (países muy pobres vs. muy ricos) y se aplana en ingresos altos — un patrón bien documentado en la literatura de desarrollo.
+
+::: callout-note
+**Correlación no implica causalidad.** Que dos variables estén correlacionadas no significa que una cause la otra. El PIB per cápita alto no *causa* directamente mayor esperanza de vida; hay factores intermedios como acceso a salud, nutrición y educación.
+:::
+
+# Datos de arte: la colección del Tate
+
+R también permite explorar datos del mundo artístico. El paquete `modeldata` incluye metadatos de obras del museo Tate de Londres, con información sobre artistas, títulos, años y medios utilizados.
+
+```{r}
+#| label: tate-setup
+
+# install.packages("modeldata") # Descomenten si necesitan instalar
+library(modeldata)
+data(tate_text)
+```
+
+## Explorando la colección
+
+```{r}
+#| label: tate-explora
+
+# ¿Qué variables tenemos?
+names(tate_text)
+head(tate_text)
+
+# ¿Cuántas obras hay por artista? (los 15 más representados)
+tate_text |>
+  count(artist, sort = TRUE) |>
+  head(15)
+```
+
+## Obras a través del tiempo
+
+```{r}
+#| label: tate-tiempo
+#| fig-width: 9
+#| fig-height: 5
+
+# Distribución temporal de obras en la colección
+tate_text |>
+  filter(!is.na(year), year >= 1800) |>
+  ggplot(aes(x = year)) +
+  geom_histogram(binwidth = 10, fill = "steelblue", colour = "white") +
+  labs(
+    title = "Obras en la colección del Tate por década de creación",
+    x = "Año de creación",
+    y = "Cantidad de obras"
+  ) +
+  theme_minimal()
+```
+
+## Medios artísticos más utilizados
+
+```{r}
+#| label: tate-medios
+#| fig-width: 9
+#| fig-height: 6
+
+# Extraer las primeras palabras del medio para agrupar
+tate_text |>
+  mutate(medio_simple = word(medium, 1, 2)) |>
+  count(medio_simple, sort = TRUE) |>
+  head(12) |>
+  ggplot(aes(x = reorder(medio_simple, n), y = n)) +
+  geom_col(fill = "coral3") +
+  coord_flip() +
+  labs(
+    title = "Medios artísticos más frecuentes en el Tate",
+    x = "", y = "Cantidad de obras"
+  ) +
+  theme_minimal()
+```
+
+Estos datos pueden servir de punto de partida para investigaciones sobre patrimonio artístico, historia del arte o análisis de colecciones museísticas. Los títulos y descripciones de las obras también se prestan para análisis textual.
+
+# Análisis de texto: de las narrativas a los datos
+
+Esta sección introduce herramientas para analizar textos de manera cuantitativa, útiles para investigaciones que trabajen con narrativas, discursos, poesía, entrevistas o cualquier corpus textual.
+
+## ¿Para qué sirve el análisis cuantitativo de texto?
+
+-   **Estudios literarios**: identificar patrones léxicos en obras, comparar estilos entre autores o periodos.
+-   **Análisis de discurso**: examinar vocabulario político, religioso o mediático.
+-   **Lingüística**: analizar bilingüismo, emociones en narrativas, frecuencias léxicas.
+-   **Ciencias sociales**: estudiar contenido de medios, entrevistas, documentos históricos.
+-   **Detección de patrones**: identificar vocabulario asociado a fraude, *spam* u otros fenómenos.
+
+## tidytext: texto como datos ordenados
+
+El paquete `tidytext` convierte texto en una tabla donde cada fila es una palabra (*token*). Esto permite usar las herramientas de `tidyverse` para analizar texto.
+
+```{r}
+#| label: tidytext-setup
+
+# install.packages(c("tidytext", "janeaustenr", "wordcloud")) # si necesitan instalar
+library(tidytext)
+library(janeaustenr)
+```
+
+El paquete `janeaustenr` contiene las seis novelas completas de Jane Austen. Lo usamos como ejemplo de corpus literario extenso en inglés.
+
+```{r}
+#| label: austen-tokens
+
+# Convertir las novelas en una tabla de palabras (tokens)
+austen_palabras <- austen_books() |>
+  unnest_tokens(word, text)
+
+# ¿Cuántas palabras tiene cada novela?
+austen_palabras |>
+  count(book, sort = TRUE)
+```
+
+## Frecuencias de palabras (sin palabras vacías)
+
+Las *stopwords* o palabras vacías son aquellas que no aportan contenido analítico (artículos, preposiciones, conjunciones). Al removerlas, nos quedamos con el vocabulario sustantivo del texto.
+
+```{r}
+#| label: austen-freq
+#| fig-width: 9
+#| fig-height: 7
+
+# Remover stopwords en inglés
+austen_freq <- austen_palabras |>
+  anti_join(stop_words, by = "word") |>
+  count(book, word, sort = TRUE)
+
+# Las 10 palabras más frecuentes por novela
+austen_freq |>
+  group_by(book) |>
+  slice_max(n, n = 10) |>
+  ggplot(aes(x = reorder_within(word, n, book), y = n, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ book, scales = "free_y") +
+  scale_x_reordered() +
+  coord_flip() +
+  labs(
+    title = "Palabras más frecuentes en las novelas de Jane Austen",
+    x = "", y = "Frecuencia"
+  ) +
+  theme_minimal()
+```
+
+## Nubes de palabras
+
+Una nube de palabras ofrece una representación visual rápida del vocabulario dominante. Las palabras más frecuentes aparecen en mayor tamaño.
+
+```{r}
+#| label: wordcloud-austen
+#| fig-width: 7
+#| fig-height: 7
+
+library(wordcloud)
+
+# Nube de palabras de "Orgullo y Prejuicio"
+austen_palabras |>
+  filter(book == "Pride & Prejudice") |>
+  anti_join(stop_words, by = "word") |>
+  count(word, sort = TRUE) |>
+  with(wordcloud(word, n, max.words = 80,
+                 colors = brewer.pal(8, "Dark2")))
+```
+
+## Literatura en español: el Proyecto Gutenberg
+
+El paquete `gutenbergr` permite acceder a más de 57,000 textos de dominio público del Proyecto Gutenberg, incluyendo centenares de obras en español. Aquí descargaremos un fragmento del *Don Quijote* de Miguel de Cervantes para analizarlo.
+
+::: callout-note
+**Nota:** `gutenbergr` requiere conexión a internet para descargar los textos. Una vez descargados, se pueden trabajar sin conexión.
+:::
+
+```{r}
+#| label: gutenberg-setup
+
+# install.packages("gutenbergr") # Descomenten si necesitan instalar
+library(gutenbergr)
+
+# Buscar obras disponibles en español
+obras_es <- gutenberg_works(languages = "es")
+
+# ¿Cuántas obras en español hay disponibles?
+nrow(obras_es)
+
+# Algunas obras notables
+obras_es |>
+  filter(grepl("Cervantes|Hostos|Dario|Burgos", author, ignore.case = TRUE)) |>
+  select(gutenberg_id, title, author) |>
+  head(10)
+```
+
+## Descargando y analizando el Quijote
+
+```{r}
+#| label: quijote-descarga
+
+# Descargar el texto del Quijote (ID 2000 en Gutenberg)
+quijote <- gutenberg_download(2000)
+
+# Vistazo al texto
+head(quijote$text, 20)
+
+# Cantidad de líneas
+nrow(quijote)
+```
+
+```{r}
+#| label: quijote-tokens
+
+# Tokenizar el Quijote
+quijote_palabras <- quijote |>
+  unnest_tokens(palabra, text)
+
+# Total de palabras
+nrow(quijote_palabras)
+
+# Remover stopwords en español
+library(stopwords)
+vacias_es <- tibble(palabra = stopwords("es", source = "stopwords-iso"))
+
+quijote_freq <- quijote_palabras |>
+  anti_join(vacias_es, by = "palabra") |>
+  filter(nchar(palabra) > 2) |>   # eliminar tokens muy cortos
+  count(palabra, sort = TRUE)
+
+head(quijote_freq, 20)
+```
+
+```{r}
+#| label: quijote-nube
+#| fig-width: 8
+#| fig-height: 8
+
+# Nube de palabras del Quijote
+quijote_freq |>
+  with(wordcloud(palabra, n, max.words = 100,
+                 colors = brewer.pal(8, "Spectral")))
+```
+
+```{r}
+#| label: quijote-grafico
+#| fig-width: 9
+#| fig-height: 6
+
+# Las 20 palabras más frecuentes del Quijote
+quijote_freq |>
+  head(20) |>
+  ggplot(aes(x = reorder(palabra, n), y = n)) +
+  geom_col(fill = "darkgoldenrod3") +
+  coord_flip() +
+  labs(
+    title = "Palabras más frecuentes en Don Quijote de la Mancha",
+    subtitle = "Texto completo del Proyecto Gutenberg, sin palabras vacías",
+    x = "", y = "Frecuencia"
+  ) +
+  theme_minimal()
+```
+
+Noten cómo los nombres de los protagonistas (*don*, *quijote*, *sancho*) dominan el vocabulario, junto con términos de la caballería y la narrativa (*caballero*, *señor*, *respondió*, *dijo*). Este tipo de análisis permite identificar rápidamente los ejes temáticos de una obra.
+
+## quanteda: análisis más avanzado de corpus
+
+`quanteda` es un paquete robusto diseñado para análisis cuantitativo de texto. Permite crear corpus, tokenizar, construir matrices documento-característica (DFM) y aplicar medidas estadísticas avanzadas.
+
+```{r}
+#| label: quanteda-setup
+
+# install.packages(c("quanteda", "quanteda.textstats", "quanteda.textplots"))
+library(quanteda)
+library(quanteda.textstats)
+library(quanteda.textplots)
+```
+
+### Ejemplo: discursos inaugurales de presidentes de EEUU
+
+`quanteda` incluye un corpus de discursos inaugurales presidenciales que sirve para explorar cambios en el lenguaje político a través del tiempo.
+
+```{r}
+#| label: inaugural-corpus
+
+# El corpus viene incluido en quanteda
+corp_inaug <- data_corpus_inaugural
+summary(corp_inaug, 10)
+```
+
+### Tokenización y limpieza
+
+La tokenización divide el texto en unidades léxicas (*tokens*). Luego removemos puntuación, números, símbolos y palabras vacías:
+
+```{r}
+#| label: inaugural-tokens
+
+# Tokenizar, limpiar y remover stopwords en inglés
+toks_inaug <- tokens(
+  corp_inaug,
+  remove_punct = TRUE,
+  remove_numbers = TRUE,
+  remove_symbols = TRUE
+) |>
+  tokens_tolower() |>
+  tokens_remove(stopwords("en"))
+```
+
+### Matriz documento-característica (DFM)
+
+La DFM convierte el texto en una estructura numérica: cada fila es un documento, cada columna un término, y cada celda indica cuántas veces aparece ese término en el documento. Es la base para todo análisis cuantitativo de texto.
+
+```{r}
+#| label: inaugural-dfm
+
+# Crear la DFM
+dfm_inaug <- dfm(toks_inaug)
+
+# Los 20 términos más frecuentes en todo el corpus
+topfeatures(dfm_inaug, 20)
+```
+
+### Nube de palabras con quanteda
+
+```{r}
+#| label: inaugural-wordcloud
+#| fig-width: 8
+#| fig-height: 8
+
+textplot_wordcloud(dfm_inaug, max_words = 100,
+                   color = brewer.pal(8, "Set1"))
+```
+
+### Comparando vocabulario entre épocas (*keyness*)
+
+El análisis de *keyness* identifica las palabras que distinguen estadísticamente a un grupo de otro. Aquí comparamos los discursos inaugurales de Obama (2009) y Trump (2017):
+
+```{r}
+#| label: keyness
+#| fig-width: 9
+#| fig-height: 6
+
+# Subconjunto: Obama 2009 vs. Trump 2017
+dfm_comparacion <- dfm_inaug |>
+  dfm_subset(President %in% c("Obama", "Trump") &
+               Year %in% c(2009, 2017))
+
+# ¿Qué palabras distinguen a cada presidente?
+k <- textstat_keyness(dfm_comparacion,
+                      target = docvars(dfm_comparacion)$President == "Obama")
+textplot_keyness(k, n = 15) +
+  labs(title = "Vocabulario distintivo: Obama 2009 vs. Trump 2017")
+```
+
+Las barras azules muestran palabras más características de Obama; las grises, de Trump. Este tipo de análisis es transferible a cualquier comparación textual: dos autores, dos periodos, dos medios de comunicación, etc.
+
+### Colocaciones: frases que van juntas
+
+Las colocaciones son pares o secuencias de palabras que aparecen juntas con una frecuencia mayor a la esperada por azar. Son útiles para identificar expresiones fijas, nombres propios y conceptos compuestos.
+
+```{r}
+#| label: colocaciones
+
+# ¿Qué pares de palabras aparecen juntos con frecuencia?
+coll <- textstat_collocations(toks_inaug, size = 2, min_count = 5)
+head(coll, 15)
+```
+
+### Red de co-ocurrencias
+
+La red de co-ocurrencias muestra cómo se relacionan las palabras entre sí dentro de una ventana de contexto. Los nodos son palabras y los enlaces representan la frecuencia con que aparecen cercanas.
+
+```{r}
+#| label: red-coocurrencia
+#| fig-width: 9
+#| fig-height: 8
+
+# Red enfocada en los discursos de Obama
+toks_obama <- tokens_subset(toks_inaug, President == "Obama")
+fcmat <- fcm(toks_obama, context = "window", window = 5)
+
+# Seleccionar los 30 términos con mayor fuerza de co-ocurrencia
+fuerza <- sort(Matrix::colSums(fcmat), decreasing = TRUE)
+principales <- names(fuerza)[1:min(30, length(fuerza))]
+fcm_sub <- fcm_select(fcmat, pattern = principales)
+
+textplot_network(fcm_sub, min_freq = 3, edge_alpha = 0.5) +
+  labs(title = "Red de co-ocurrencia: discursos de Obama")
+```
+
+# Aplicando estas herramientas a sus investigaciones
+
+Las técnicas que hemos visto se pueden aplicar a una variedad de contextos de investigación:
+
+| Tema de investigación | Posible aplicación en R |
+|----|----|
+| Poesía épica caribeña (*The Colibriad*) | Crear corpus de poemas con `gutenbergr`, analizar frecuencias léxicas, comparar vocabulario con otras tradiciones |
+| Pintura y patrimonio cultural en PR | Analizar descripciones de obras, catálogos, textos curatoriales con `tidytext`; explorar colecciones como la del Tate |
+| Emigración y fuga de cerebros | Visualizar datos migratorios con `ggplot2`; explorar datos censales con `tidycensus` |
+| Bilingüismo y emociones | Tokenizar narrativas bilingües, comparar léxico emocional entre idiomas con diccionarios de sentimiento |
+| Filosofía existencialista y Julia de Burgos | Analizar el corpus de la autora desde Gutenberg, identificar temas recurrentes, medir diversidad léxica |
+| Detección de *spam* en audio | Tras transcribir, analizar patrones léxicos del fraude vs. comunicación legítima con *keyness* |
+| Partido Nacionalista de PR | Analizar documentos históricos, discursos, prensa de la época; redes de co-ocurrencia |
+| Transformismo y cultura puertorriqueña | Analizar cobertura mediática, entrevistas, representaciones textuales en prensa |
+| Metodologías pedagógicas y la academia occidental | Comparar textos curriculares, analizar sesgos en materiales didácticos con diccionarios temáticos |
+
+# Recapitulando
+
+## Qué cubrimos hoy
+
+-   **R y RStudio**: instalación, consola, objetos, funciones y vectores.
+-   **Tidyverse**: `filter()`, `select()`, `mutate()`, `group_by()`, `summarise()`, y el *pipe* `|>`.
+-   **Visualización**: `ggplot2` con geometrías, estéticas, facetas, escalas y temas.
+-   **Datos de arte**: exploración de la colección del Tate con `modeldata`.
+-   **Análisis de texto en inglés**: `tidytext` con Jane Austen y `quanteda` con discursos inaugurales.
+-   **Análisis de texto en español**: `gutenbergr` con el *Quijote* y *stopwords* en español.
+
+## Recursos para continuar
+
+-   [Introducción a la ciencia de datos (Irizarry)](https://leanpub.com/dslibro) — libro en español, gratuito.
+-   [R for Data Science (Wickham)](https://r4ds.hadley.nz/) — libro gratuito en línea (inglés).
+-   [Quanteda: guía rápida](https://quanteda.io/articles/quickstart.html) — documentación oficial de quanteda.
+-   [Text Mining with R (Silge & Robinson)](https://www.tidytextmining.com/) — libro sobre `tidytext` (inglés).
+-   [Proyecto Gutenberg en español](https://www.gutenberg.org/browse/languages/es) — textos de dominio público en español (o en general).
+-   [StackOverflow, etiqueta R](https://stackoverflow.com/questions/tagged/r) — para cuando se atasquen.
+-   [Posit Cloud](https://posit.cloud/) — R en la nube, sin necesidad de instalar nada.
+
+## Paquetes utilizados
+
+Para reproducir este taller, instalen los siguientes paquetes:
+
+``` r
+install.packages(c(
+  "tidyverse", "dslabs", "modeldata",
+  "tidytext", "janeaustenr", "gutenbergr",
+  "wordcloud", "RColorBrewer", "stopwords",
+  "quanteda", "quanteda.textstats", "quanteda.textplots"
+))
+```
+
+¡Gracias por participar! Dudas, sugerencias y preguntas, contáctenme vía: [rashid.marcano \[arroba\] upr \[punto\] edu](mailto:%20rashid.marcano@upr.edu).

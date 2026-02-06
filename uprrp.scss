@@ -1,0 +1,122 @@
+/*-- scss:defaults --*/
+// Colores institucionales UPRRP
+$rojo-uprrp: #e70033;
+$rojo-claro: #ff4d6a;
+$gris-uprrp: #babcbe;
+$negro-uprrp: #261c02;
+$blanco: #FFFFFF;
+$gris-claro: #f5f5f5;
+$gris-oscuro: #333333;
+
+// Fuentes
+$font-family-sans-serif: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$presentation-font-size-root: 32px;
+$presentation-h1-font-size: 2.0em;
+$presentation-h2-font-size: 1.6em;
+$presentation-h3-font-size: 1.3em;
+
+// Colores del tema
+$body-bg: $blanco;
+$body-color: $negro-uprrp;
+$link-color: $rojo-uprrp;
+$selection-bg: rgba($rojo-uprrp, 0.3);
+
+// Encabezados
+$presentation-heading-color: $rojo-uprrp;
+$presentation-heading-font: $font-family-sans-serif;
+
+// Código
+$code-block-bg: $gris-claro;
+$code-color: $rojo-uprrp;
+
+/*-- scss:rules --*/
+.reveal h1 {
+  color: $rojo-uprrp;
+  border-bottom: 3px solid $gris-uprrp;
+  padding-bottom: 0.3em;
+}
+
+.reveal h2 {
+  color: $rojo-uprrp;
+}
+
+.reveal h3 {
+  color: $rojo-claro;
+}
+
+.reveal a {
+  color: $rojo-uprrp;
+  text-decoration: underline;
+}
+
+.reveal a:hover {
+  color: $rojo-claro;
+}
+
+.reveal table th {
+  background-color: $rojo-uprrp;
+  color: $blanco;
+  padding: 0.5em 1em;
+  border: 1px solid $rojo-uprrp;
+}
+
+.reveal table td {
+  padding: 0.4em 1em;
+  border: 1px solid #ddd;
+}
+
+.reveal table tr:nth-child(even) {
+  background-color: $gris-claro;
+}
+
+.reveal pre {
+  background-color: $gris-claro;
+  border-left: 4px solid $rojo-uprrp;
+  border-radius: 4px;
+  padding: 1em;
+  font-size: 0.7em;
+}
+
+.reveal code {
+  color: $rojo-uprrp;
+  background-color: rgba(231, 0, 51, 0.1);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+.reveal .slide-number {
+  background-color: $rojo-uprrp;
+  color: $blanco;
+  font-size: 0.7em;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.reveal .progress span {
+  background: $rojo-uprrp;
+}
+
+.reveal blockquote {
+  border-left: 4px solid $gris-uprrp;
+  padding-left: 1em;
+  font-style: italic;
+  color: $negro-uprrp;
+  background-color: rgba(186, 188, 190, 0.2);
+  padding: 1em;
+  border-radius: 0 8px 8px 0;
+}
+
+/* Captions de figuras centrados (Reveal/Quarto) */
+.reveal figure figcaption,
+.reveal p.caption {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Opcional: afina tamaño/espaciado del caption */
+.reveal figure figcaption {
+  font-size: 0.70em;
+  line-height: 1.15;
+  margin-top: 0.35em;
+}

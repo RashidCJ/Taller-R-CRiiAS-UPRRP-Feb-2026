@@ -1,0 +1,30 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# Archivos renderizados (se regeneran con quarto render)
+# Nota: Taller-CRiiAS.html se incluye intencionalmente (ya distribuido)
+*_files/
+*_cache/
+Taller-CRiiAS-Presentacion.html
+
+# Archivos temporales
+*~
+*.swp
+*.bak
+
+# Directorios de caché
+_freeze/
+.quarto/
+
+# Archivos grandes binarios innecesarios en el repo
+*.pdf
+*.docx
+*.pptx
