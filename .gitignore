@@ -13,8 +13,6 @@ Thumbs.db
 # Nota: Taller-CRiiAS.html se incluye intencionalmente (ya distribuido)
 *_files/
 *_cache/
-Taller-CRiiAS-Presentacion.html
-
 # Archivos temporales
 *~
 *.swp
